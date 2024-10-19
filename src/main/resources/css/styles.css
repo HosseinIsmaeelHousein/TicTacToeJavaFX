@@ -1,0 +1,77 @@
+/* styles.css */
+
+/* General styling for the Tic-tac-toe board buttons */
+.button-cell {
+    -fx-background-color: linear-gradient(to bottom, #e6e6e6, #cccccc);
+    -fx-text-fill: black;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-border-color: #666;
+    -fx-border-width: 2;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 100px;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 2, 2);
+    -fx-transition: all 0.3s ease;
+}
+
+.button-cell:hover {
+    -fx-background-color: linear-gradient(to bottom, #f0f0f0, #d9d9d9);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.button-cell:pressed {
+    -fx-background-color: linear-gradient(to bottom, #cccccc, #999999);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 3, 3);
+}
+
+/* Styling for the reset button */
+.reset-button {
+    -fx-background-color: linear-gradient(to right, #ff6666, #ff3333);
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 3, 3);
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.reset-button:hover {
+    -fx-background-color: linear-gradient(to right, #ff9999, #ff6666);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.reset-button:pressed {
+    -fx-background-color: linear-gradient(to right, #ff3333, #cc0000);
+}
+
+/* Score labels */
+.score-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-padding: 10px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Animation for score labels when updated */
+@keyframes score-label-update {
+    0% { -fx-scale-x: 1; -fx-scale-y: 1; }
+    50% { -fx-scale-x: 1.2; -fx-scale-y: 1.2; }
+    100% { -fx-scale-x: 1; -fx-scale-y: 1; }
+}
+
+.score-label-updated {
+    -fx-animation: score-label-update 0.5s ease;
+}
