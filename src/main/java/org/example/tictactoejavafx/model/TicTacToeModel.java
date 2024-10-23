@@ -2,15 +2,30 @@ package org.example.tictactoejavafx.model;
 
 public class TicTacToeModel {
 
+    // Constants for the players and empty cell
     public static final char EMPTY = ' ';
-    public static final char PLAYER_X = 'X';  // Human player
-    public static final char PLAYER_O = 'O';  // Computer or second player
+    public static final char PLAYER_X = 'X';  // Player 1
+    public static final char PLAYER_O = 'O';  // Player 2 or Computer
 
-    private char[][] board;  // 3x3 board
-    private char currentPlayer;  // Whose turn it is
+    // Game board and current player tracking
+    private char[][] board;
+    private char currentPlayer;
 
-    public TicTacToeModel() {
-        board = new char[3][3];
+    // Track player names and scores
+    private String player1Name;
+    private String player2Name;
+    private int scorePlayer1;
+    private int scorePlayer2;
+
+    // Game mode flag
+    private boolean vsComputer;
+
+    // Constructor to initialize the board and game mode
+    public TicTacToeModel(String player1Name, String player2Name, boolean vsComputer) {
+        this.board = new char[3][3];
+        this.player1Name = player1Name;
+        this.player2Name = player2Name;
+        this.vsComputer = vsComputer;
         resetBoard();
     }
 
@@ -29,15 +44,28 @@ public class TicTacToeModel {
         return currentPlayer;
     }
 
+    // Method to get the board state
+    public char[][] getBoard() {
+        return board;
+    }
+
     // Method to place a move
     public boolean placeMove(int row, int col) {
         if (board[row][col] == EMPTY) {
             board[row][col] = currentPlayer;
-            // Switch players after a successful move
-            currentPlayer = (currentPlayer == PLAYER_X) ? PLAYER_O : PLAYER_X;
+            switchPlayer();
             return true;
         }
-        return false;  // Move is invalid if cell is already occupied
+        return false;  // Move is invalid if the cell is already occupied
+    }
+
+    // Method to switch the current player
+    private void switchPlayer() {
+        if (vsComputer && currentPlayer == PLAYER_X) {
+            currentPlayer = PLAYER_O;  // Computer takes the next turn
+        } else {
+            currentPlayer = (currentPlayer == PLAYER_X) ? PLAYER_O : PLAYER_X;
+        }
     }
 
     // Method to check if a player has won
@@ -68,15 +96,36 @@ public class TicTacToeModel {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 if (board[row][col] == EMPTY) {
-                    return false;  // At least one empty cell means game is not a draw
+                    return false;  // At least one empty cell means the game is not a draw
                 }
             }
         }
         return checkWinner() == EMPTY;  // If no winner and no empty cells, it's a draw
     }
 
-    // Method to get the board state
-    public char[][] getBoard() {
-        return board;
+    // Method to update the score of the winning player
+    public void updateScore(char winner) {
+        if (winner == PLAYER_X) {
+            scorePlayer1++;
+        } else if (winner == PLAYER_O) {
+            scorePlayer2++;
+        }
+    }
+
+    // Getters for player names and scores
+    public String getPlayer1Name() {
+        return player1Name;
+    }
+
+    public String getPlayer2Name() {
+        return player2Name;
+    }
+
+    public int getScorePlayer1() {
+        return scorePlayer1;
+    }
+
+    public int getScorePlayer2() {
+        return scorePlayer2;
     }
 }

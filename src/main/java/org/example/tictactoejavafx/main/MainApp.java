@@ -9,16 +9,23 @@ import org.example.tictactoejavafx.view.TicTacToeView;
 public class MainApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage stage) {
         try {
-            // Create Model and View instances
-            TicTacToeModel model = new TicTacToeModel();
-            TicTacToeView view = new TicTacToeView(primaryStage);
+            // Create an initial instance of TicTacToeView for the start screen
+            TicTacToeView view = new TicTacToeView(stage);
 
-            // Create Controller instance
-            GameController controller = new GameController(model, view);
+            // Set up the initial start button action
+            view.getStartGameButton().setOnAction(event -> {
+                boolean isVsComputer = view.getVsComputerButton().isSelected();
+                String player1Name = view.getPlayer1NameField().getText().isEmpty() ? "Player 1" : view.getPlayer1NameField().getText();
+                String player2Name = view.getPlayer2NameField().getText().isEmpty() ? (isVsComputer ? "Computer" : "Player 2") : view.getPlayer2NameField().getText();
 
-            // Scene setup is now handled in TicTacToeView
+                // Create the model
+                TicTacToeModel model = new TicTacToeModel(player1Name, player2Name, isVsComputer);
+
+                // Create the controller with the model and view
+                new GameController(model, view, isVsComputer, player1Name, player2Name);
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
