@@ -1,126 +1,93 @@
 package org.example.tictactoejavafx.controller;
 
-import javafx.animation.ScaleTransition;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.util.Duration;
 import org.example.tictactoejavafx.model.TicTacToeModel;
 import org.example.tictactoejavafx.view.TicTacToeView;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+
 
 public class GameController {
-
     private TicTacToeModel model;
     private TicTacToeView view;
-    private boolean isVsComputer;
-    private String player1Name;
-    private String player2Name;
 
-    public GameController(TicTacToeModel model, TicTacToeView view, boolean isVsComputer, String player1Name, String player2Name) {
+    public GameController(TicTacToeModel model, TicTacToeView view) {
         this.model = model;
         this.view = view;
-        this.isVsComputer = isVsComputer;
-        this.player1Name = player1Name;
-        this.player2Name = player2Name;
-
-        // Set up the game view
-        view.showGameBoard(player1Name, player2Name);
-
-        initialize();
+        setupEventHandlers();
+        startNewRound();
     }
 
-    // Method to initialize event handling
-    private void initialize() {
-        Button[][] cells = view.getCells();
-
-        // Set event handlers for each cell
+    private void setupEventHandlers() {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 int finalRow = row;
                 int finalCol = col;
-
-                cells[row][col].setOnAction(event -> handlePlayerMove(finalRow, finalCol));
+                view.getButton(row, col).setOnAction(event -> {
+                    if (model.isValidMove(finalRow, finalCol)) {
+                        playerMove(finalRow, finalCol);
+                    }
+                });
             }
         }
+    }
 
-        // Set event handler for the reset button
-        view.getResetButton().setOnAction(event -> {
-            model.resetBoard();
-            resetView();
+    private void playerMove(int row, int col) {
+        model.makeMove(row, col);
+        view.updateButton(row, col, model.getCurrentPlayer());
+
+        if (checkGameEnd()) {
+            return;
+        }
+
+        model.switchPlayer(); // Switch to computer
+        computerMove();
+    }
+
+    private void computerMove() {
+        // Create a 2-second pause
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+        pause.setOnFinished(event -> {
+            boolean moveMade = false;
+            while (!moveMade) {
+                int row = (int) (Math.random() * 3);
+                int col = (int) (Math.random() * 3);
+                if (model.isValidMove(row, col)) {
+                    model.makeMove(row, col);
+                    view.updateButton(row, col, model.getCurrentPlayer());
+                    moveMade = true;
+                }
+            }
+
+            if (!checkGameEnd()) {
+                model.switchPlayer(); // Switch back to player
+            }
         });
+
+        // Start the pause
+        pause.play();
     }
 
-    // Method to handle a player's move
-    private void handlePlayerMove(int row, int col) {
-        // Attempt to place a move
-        if (model.placeMove(row, col)) {
-            // Update the view with the current player's symbol
-            Button currentButton = view.getCells()[row][col];
-            char currentSymbol = model.getBoard()[row][col];
-            currentButton.setText(String.valueOf(currentSymbol));
 
-            // Add scale animation for visual feedback
-            ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), currentButton);
-            scaleTransition.setFromX(0.5);
-            scaleTransition.setFromY(0.5);
-            scaleTransition.setToX(1);
-            scaleTransition.setToY(1);
-            scaleTransition.play();
-
-            // Check if there is a winner or draw
-            char winner = model.checkWinner();
-            if (winner != TicTacToeModel.EMPTY) {
-                handleGameOver(winner + " wins!");
-                model.updateScore(winner);
-                updateScoreboard();
-            } else if (model.isDraw()) {
-                handleGameOver("It's a draw!");
-            } else {
-                // If vs Computer and it's the computer's turn, make a move
-                if (isVsComputer && model.getCurrentPlayer() == TicTacToeModel.PLAYER_O) {
-                    handleComputerMove();
-                }
-            }
+    private boolean checkGameEnd() {
+        if (model.checkWin()) {
+            char winner = model.getCurrentPlayer();
+            model.updateScore(winner);
+            view.updateMessage("Winner: " + winner);
+            view.updateScore(model.getPlayerScore(), model.getComputerScore());
+            startNewRound();
+            return true;
+        } else if (model.isBoardFull()) {
+            view.updateMessage("It's a draw!");
+            startNewRound();
+            return true;
         }
+        return false;
     }
 
-    // Method to handle computer's move
-    private void handleComputerMove() {
-        // Simple random move for the computer
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (model.getBoard()[row][col] == TicTacToeModel.EMPTY) {
-                    handlePlayerMove(row, col);
-                    return;
-                }
-            }
-        }
-    }
-
-    // Method to show an alert when the game ends
-    private void handleGameOver(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-        model.resetBoard();
-        resetView();
-    }
-
-    // Method to reset the view after a game round is over
-    private void resetView() {
-        Button[][] cells = view.getCells();
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                cells[row][col].setText("");
-            }
-        }
-    }
-
-    // Method to update the scoreboard
-    private void updateScoreboard() {
-        view.getScoreLabelX().setText(player1Name + ": " + model.getScorePlayer1());
-        view.getScoreLabelO().setText(player2Name + ": " + model.getScorePlayer2());
+    private void startNewRound() {
+        model.resetGame();
+        view.resetBoard();
+        view.updateMessage("New Round! Player's turn.");
     }
 }

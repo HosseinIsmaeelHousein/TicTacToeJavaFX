@@ -1,37 +1,30 @@
 package org.example.tictactoejavafx.main;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.tictactoejavafx.controller.GameController;
 import org.example.tictactoejavafx.model.TicTacToeModel;
 import org.example.tictactoejavafx.view.TicTacToeView;
 
 public class MainApp extends Application {
-
     @Override
-    public void start(Stage stage) {
-        try {
-            // Create an initial instance of TicTacToeView for the start screen
-            TicTacToeView view = new TicTacToeView(stage);
+    public void start(Stage primaryStage) {
+        // Initialize the model, view, and controller
+        TicTacToeModel model = new TicTacToeModel();
+        TicTacToeView view = new TicTacToeView();
+        GameController controller = new GameController(model, view);
 
-            // Set up the initial start button action
-            view.getStartGameButton().setOnAction(event -> {
-                boolean isVsComputer = view.getVsComputerButton().isSelected();
-                String player1Name = view.getPlayer1NameField().getText().isEmpty() ? "Player 1" : view.getPlayer1NameField().getText();
-                String player2Name = view.getPlayer2NameField().getText().isEmpty() ? (isVsComputer ? "Computer" : "Player 2") : view.getPlayer2NameField().getText();
+        // Set up the main scene with the view
+        Scene scene = new Scene(view, 400, 400); // Width and height for the window
 
-                // Create the model
-                TicTacToeModel model = new TicTacToeModel(player1Name, player2Name, isVsComputer);
-
-                // Create the controller with the model and view
-                new GameController(model, view, isVsComputer, player1Name, player2Name);
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Configure the stage
+        primaryStage.setTitle("Tic-Tac-Toe");
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
-        launch(args);
+        launch(args); // Launch the JavaFX application
     }
 }
