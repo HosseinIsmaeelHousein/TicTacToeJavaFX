@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.tictactoejavafx.controller.GameController;
-import org.example.tictactoejavafx.model.TicTacToeModel;
+import org.example.tictactoejavafx.TicTacToeModel;
 import org.example.tictactoejavafx.view.TicTacToeView;
 
 public class MainApp extends Application {

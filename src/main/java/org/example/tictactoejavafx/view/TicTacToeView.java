@@ -69,4 +69,13 @@ public class TicTacToeView extends BorderPane {
     public void updateMessage(String message) {
         messageLabel.setText(message);
     }
+
+    public Label getScoreLabel() {
+        return scoreLabel;
+    }
+
+    public Label getMessageLabel() {
+        return messageLabel;
+    }
+
 }

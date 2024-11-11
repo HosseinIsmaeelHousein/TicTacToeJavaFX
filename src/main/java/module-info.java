@@ -12,5 +12,5 @@ module org.example.tictactoejavafx {
     exports org.example.tictactoejavafx.main;
     exports org.example.tictactoejavafx.controller;
     exports org.example.tictactoejavafx.view;
-    exports org.example.tictactoejavafx.model;
+    exports org.example.tictactoejavafx;
 }

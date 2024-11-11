@@ -1,19 +1,19 @@
 package org.example.tictactoejavafx.controller;
 
-import javafx.scene.control.Alert;
-import org.example.tictactoejavafx.model.TicTacToeModel;
+import org.example.tictactoejavafx.TicTacToeModel;
 import org.example.tictactoejavafx.view.TicTacToeView;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
-
 public class GameController {
     private TicTacToeModel model;
     private TicTacToeView view;
+    public boolean isPlayerTurn; // Flag to control turn
 
     public GameController(TicTacToeModel model, TicTacToeView view) {
         this.model = model;
         this.view = view;
+        this.isPlayerTurn = true; // Player starts the game
         setupEventHandlers();
         startNewRound();
     }
@@ -24,7 +24,7 @@ public class GameController {
                 int finalRow = row;
                 int finalCol = col;
                 view.getButton(row, col).setOnAction(event -> {
-                    if (model.isValidMove(finalRow, finalCol)) {
+                    if (isPlayerTurn && model.isValidMove(finalRow, finalCol)) {
                         playerMove(finalRow, finalCol);
                     }
                 });
@@ -32,7 +32,7 @@ public class GameController {
         }
     }
 
-    private void playerMove(int row, int col) {
+    public void playerMove(int row, int col) {
         model.makeMove(row, col);
         view.updateButton(row, col, model.getCurrentPlayer());
 
@@ -40,12 +40,12 @@ public class GameController {
             return;
         }
 
-        model.switchPlayer(); // Switch to computer
+        isPlayerTurn = false; // Set to false as it's now the computer's turn
+        model.switchPlayer();
         computerMove();
     }
 
-    private void computerMove() {
-        // Create a 2-second pause
+    public void computerMove() {
         PauseTransition pause = new PauseTransition(Duration.seconds(2));
         pause.setOnFinished(event -> {
             boolean moveMade = false;
@@ -60,16 +60,14 @@ public class GameController {
             }
 
             if (!checkGameEnd()) {
-                model.switchPlayer(); // Switch back to player
+                model.switchPlayer();
+                isPlayerTurn = true; // Set back to true for player's turn
             }
         });
-
-        // Start the pause
         pause.play();
     }
 
-
-    private boolean checkGameEnd() {
+    public boolean checkGameEnd() {
         if (model.checkWin()) {
             char winner = model.getCurrentPlayer();
             model.updateScore(winner);
@@ -85,9 +83,10 @@ public class GameController {
         return false;
     }
 
-    private void startNewRound() {
+    public void startNewRound() {
         model.resetGame();
         view.resetBoard();
         view.updateMessage("New Round! Player's turn.");
+        isPlayerTurn = true; // Set to true as player starts each round
     }
 }
